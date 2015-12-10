@@ -1,3 +1,7 @@
+// matrix-rotation-algo.cpp
+// https://www.hackerrank.com/challenges/matrix-rotation-algo
+// 100%
+
 #include <cmath>
 #include <cstdio>
 #include <vector>
