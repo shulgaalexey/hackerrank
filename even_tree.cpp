@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <queue>
 using namespace std;
 
 class node {
@@ -8,12 +9,13 @@ public:
 	node *parent;
 	int rank;
 	int id;
-	node() : parent(NULL), rank(0), id(0) {}
+	bool visited;
+	node() : parent(NULL), rank(0), id(0), visited(false) {}
 };
 
 void trace(const vector<node *> &tree)
 {
-	return;
+	//return;
 	cout << "Tracing:" << endl;
 	for (size_t i = 0; i < tree.size(); i++) {
 		node *n = tree[i];
@@ -31,6 +33,7 @@ int calc_rank(node *root)
 {
 	if (!root)
 		return 0;
+
 	root->rank = 1;
 	for (size_t i = 0; i < root->children.size(); i++)
 		root->rank += calc_rank(root->children[i]);
@@ -72,12 +75,10 @@ int main(void)
 	int M = 0;
 	cin >> N >> M;
 
-	vector<node *> tree(N);
+	vector<node *> graph(N);
 	for (int i = 0; i < N; i++) {
-		tree[i] = new node;
-		tree[i]->rank = 0;
-		tree[i]->parent = NULL;
-		tree[i]->id = i;
+		graph[i] = new node;
+		graph[i]->id = i;
 	}
 
 	vector<pair<int, int> > edges(M);
@@ -91,26 +92,60 @@ int main(void)
 	}
 
 	for (int i = 0; i < M; i++) {
-		node *child = tree[edges[i].first];
-		node *parent = tree[edges[i].second];
+		node *child = graph[edges[i].first];
+		node *parent = graph[edges[i].second];
+		parent->children.push_back(child);
+		child->parent = parent;
+
+		child = graph[edges[i].second];
+		parent = graph[edges[i].first];
 		parent->children.push_back(child);
 		child->parent = parent;
 	}
 
-	trace(tree);
+	// Topological sort
+	graph[0]->parent = NULL;
+	queue<node *> q;
+	q.push(graph[0]);
+	graph[0]->visited = true;
 
-	calc_rank(tree[0]);
+	while (!q.empty()) {
+		node *n = q.front();
+		q.pop();
 
-	trace(tree);
+		if (n->visited) {
+			for (size_t i = 0; i < n->children.size(); i++) {
+				node *c = n->children[i];
+				q.push(c);
+				c->visited = true;
+				c->parent = n;
+				for (size_t j = 0; j < c->children.size(); j++) {
+					if (c->children[j] == n) {
+						c->children.erase(c->children.begin() + j);
+						break;
+					}
+				}
+			}
+		}
+	}
 
-	const int ret = count_cuts(tree[0]);
 
-	trace(tree);
+	//trace(graph);
+
+	calc_rank(graph[0]);
+
+
+	//trace(graph);
+
+	//cout << "COUNTING" << endl;
+	const int ret = count_cuts(graph[0]);
+
+	//trace(graph);
 
 	cout << ret << endl;
 
 	for (int i = 0; i < N; i++)
-		delete tree[i];
+		delete graph[i];
 
 	return 0;
 }
