@@ -42,13 +42,6 @@ void extract_nodes(int64 d, vector<int> &nodes)
 
 int calc_query(const vector<int64> &d)
 {
-	//----DBG-------------
-	/*cout << "Processing query: {";
-	for (size_t i = 0; i < d.size(); i++)
-		cout << d[i] << " ";
-	cout << "} ";*/
-	//----DBG-------------
-
 	int64 A[64] = {0};
 
 	// Create Adjacency matrix
@@ -56,20 +49,11 @@ int calc_query(const vector<int64> &d)
 		vector<int> nodes;
 		extract_nodes(d[k], nodes);
 		for (size_t i = 0; i < nodes.size(); i++) {
-			//cout << endl << "   node: " << nodes[i];
 			for (size_t j = i + 1; j < nodes.size(); j++) {
-				//cout << "     edge:" << nodes[i] << "---" << nodes[j] << endl;
 				A[nodes[i]] |= 1 << nodes[j];
 			}
 		}
-		//cout << endl;
 	}
-
-	//----DBG-------------
-	/*cout << endl << "Adj Matrix:" << endl;
-	for (int i = 0; i < 64; i++)
-		cout << A[i] << endl;*/
-	//----DBG-------------
 
 	// Kruscal
 	int node_sets[64] = {0};
@@ -80,32 +64,19 @@ int calc_query(const vector<int64> &d)
 		for (int j = i + 1; j < 64; j++) {
 			if (GET_ADJ(A, i, j)) {
 				if (node_sets[i] != node_sets[j]) {
-					//cout << "   UNITE: " << i << " & " << j << endl;
 					node_sets[j] = node_sets[i];
 				}
 			}
 		}
 	}
 
-	//----DBG-------------
-	/*cout << endl;
-	for (int i = 0; i < 64; i++)
-		cout << "   ___  node_sets of .. is: " << i << " .. " << node_sets[i] << endl;*/
-	//----DBG-------------
-
 
 	int count = 0;
 	for (int i = 0; i < 64; i++) {
-		//cout << "   ___  node_sets: " << i << " .. " << node_sets[i];
 		if (node_sets[i] == i)
 			count ++;
-		//else
-		//	cout << "   !!!";
-		//cout << endl;
 	}
 
-
-	//cout << "...count: " << count << endl;
 	return count;
 }
 
@@ -119,29 +90,16 @@ int calc_queries(const vector<vector<int64> *> &queries)
 
 int main(void)
 {
-	int n = 3;
+	int n = 0;
 	cin >> n;
 
-	//int input[] = {2, 5, 9};
 	vector<int64> d(n);
 	for (int i = 0; i < n; i++) {
 		cin >> d[i];
-		//d[i] = input[i];
 	}
 
 	vector<vector<int64> *> queries;
 	generate_queries(d, queries);
-
-	//----DBG-------------
-	/*for (size_t i = 0; i < queries.size(); i++) {
-		vector<int64> *v = queries[i];
-		cout << "{";
-		for (size_t j = 0; j < v->size(); j++)
-			cout << (*v)[j] << " ";
-		cout << "}" << endl;
-	}*/
-	//----DBG-------------
-
 
 	const int ret = calc_queries(queries);
 	cout << ret << endl;
