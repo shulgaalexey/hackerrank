@@ -3,8 +3,8 @@
 #include <queue>
 using namespace std;
 
-priority_queue<int, vector<int>, less<int> > lower = priority_queue<int, vector<int>, less<int> >();
-priority_queue<int, vector<int>, greater<int> > higher = priority_queue<int, vector<int>, greater<int> >();
+priority_queue<int, vector<int>, less<int> > lower;
+priority_queue<int, vector<int>, greater<int> > higher;
 
 void add(int i){
     if(lower.empty())
